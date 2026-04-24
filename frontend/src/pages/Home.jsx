@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import ridealongLogo from '../assets/ridealong-logo.png'
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import axios from 'axios';
@@ -44,19 +45,24 @@ const Home = () => {
         socket.emit("join", { userType: "user", userId: user._id })
     }, [ user ])
 
-    socket.on('ride-confirmed', ride => {
+    useEffect(() => {
+        socket.on('ride-confirmed', ride => {
+            setVehicleFound(false)
+            setWaitingForDriver(true)
+            setRide(ride)
+        })
 
+        socket.on('ride-started', ride => {
+            console.log("ride")
+            setWaitingForDriver(false)
+            navigate('/riding', { state: { ride } })
+        })
 
-        setVehicleFound(false)
-        setWaitingForDriver(true)
-        setRide(ride)
-    })
-
-    socket.on('ride-started', ride => {
-        console.log("ride")
-        setWaitingForDriver(false)
-        navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-    })
+        return () => {
+            socket.off('ride-confirmed')
+            socket.off('ride-started')
+        }
+    }, [])
 
 
     const handlePickupChange = async (e) => {
@@ -199,7 +205,7 @@ const Home = () => {
 
     return (
         <div className='h-screen relative overflow-hidden'>
-            <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
+            <img className='absolute left-5 top-5 w-[120px]' src={ridealongLogo} alt="RideAlong" />
             <div className='h-screen w-screen'>
                 {/* image for temporary use  */}
                 <LiveTracking />

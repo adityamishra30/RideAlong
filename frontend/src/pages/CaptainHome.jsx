@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import ridealongLogo from '../assets/ridealong-logo.png'
 import { Link } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
@@ -45,15 +46,16 @@ const CaptainHome = () => {
         const locationInterval = setInterval(updateLocation, 10000)
         updateLocation()
 
-        // return () => clearInterval(locationInterval)
+        socket.on('new-ride', (data) => {
+            setRide(data)
+            setRidePopupPanel(true)
+        })
+
+        return () => {
+            clearInterval(locationInterval)
+            socket.off('new-ride')
+        }
     }, [])
-
-    socket.on('new-ride', (data) => {
-
-        setRide(data)
-        setRidePopupPanel(true)
-
-    })
 
     async function confirmRide() {
 
@@ -102,7 +104,7 @@ const CaptainHome = () => {
     return (
         <div className='h-screen'>
             <div className='fixed p-6 top-0 flex items-center justify-between w-screen'>
-                <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
+                <img className='w-[120px]' src={ridealongLogo} alt="RideAlong" />
                 <Link to='/captain-home' className=' h-10 w-10 bg-white flex items-center justify-center rounded-full'>
                     <i className="text-lg font-medium ri-logout-box-r-line"></i>
                 </Link>

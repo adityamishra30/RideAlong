@@ -1,4 +1,5 @@
 import React from 'react'
+import ridealongLogo from '../assets/ridealong-logo.png'
 import { Link, useLocation } from 'react-router-dom' // Added useLocation
 import { useEffect, useContext } from 'react'
 import { SocketContext } from '../context/SocketContext'
@@ -11,9 +12,13 @@ const Riding = () => {
     const { socket } = useContext(SocketContext)
     const navigate = useNavigate()
 
-    socket.on("ride-ended", () => {
-        navigate('/home')
-    })
+    useEffect(() => {
+        socket.on("ride-ended", () => {
+            navigate('/home')
+        })
+
+        return () => socket.off("ride-ended")
+    }, [])
 
 
     return (
@@ -27,7 +32,7 @@ const Riding = () => {
             </div>
             <div className='h-1/2 p-4'>
                 <div className='flex items-center justify-between'>
-                    <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
+                    <img className='w-[120px]' src={ridealongLogo} alt="RideAlong" />
                     <div className='text-right'>
                         <h2 className='text-lg font-medium capitalize'>{ride?.captain.fullname.firstname}</h2>
                         <h4 className='text-xl font-semibold -mt-1 -mb-1'>{ride?.captain.vehicle.plate}</h4>
